@@ -1,4 +1,5 @@
 INTRODUCTION
+
 The amqp-rest is hi-perfomance light (600K) HTTP server based libevent, realise two methods:
 
 HTTP GET - the reading from queue one item by BASIC.GET AMQP method
@@ -31,12 +32,17 @@ the loging is ( log file )
 2010/04/12 03:22:47 CONTENT: 10.0.0.1 GET /sss/q2 byte:9 200 OK 
 2010/04/12 03:26:07 CONTENT: 10.0.0.1 GET /sss/q2?all bytes 79 200 OK 
 2010/04/12 03:33:11 CONTENT: 10.0.0.1 POST /sss/ex1?news bytes: 14 200 OK 
+
 INSTALLATION
+
 You must install the libevent http://monkey.org/~provos/libevent/
 You must install amqpcpp lib http://code.google.com/p/rabbitcpp/
+or http://github.com/akalend/amqpcpp
+
 run Makefile;
 copy amqp-rest to /usr/local/bin
 copy n.cont to /usr/local/etc/amqp-rest.conf
+
 edit the amqp-rest.conf
 
 logfile /usr/local/var/amqp.log;        # logfile
@@ -54,7 +60,9 @@ default config file path is /usr/local/etc/amqo-rest.conf
 
 the restart -> send SIGHUP to amqp-rest
 the stop is: ./amqp-rest stop (if config in the default path)
+
 PERFORMANCE
+
 ab -c 5 -n 1000 http://10.0.0.1:8080/xxx/q2
 
 concurrency Level:      5
