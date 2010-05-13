@@ -1,0 +1,70 @@
+INTRODUCTION
+The amqp-rest is hi-perfomance light (600K) HTTP server based libevent, realise two methods:
+
+HTTP GET - the reading from queue one item by BASIC.GET AMQP method
+HTTP POST - publish to exchange by BASIC.PUBLISH AMQP method
+the result from broker return by json. Using in WEB/AJAX technologies.
+
+curl http://10.0.0.1:8080/sss/q2     // get one item from queue "q2" 
+{"result": "OK", "message":"message 2", size : 2}
+// message is text message, size is queue size.
+the name of queue is last part from url, after last slash (q_name): /any/path/and/q_name
+
+read all messages: the url must have parm "?all"
+
+curl http://10.0.0.1:8080/sss/q2?all
+{"result": "OK", "count" : 2, messages ["message 3","the text\"xxxx\" tttt"]}
+// 
+read queue size: the url must have parm "?count"
+
+curl http://10.0.0.1:8080/sss/q2?count
+{"result": "Ok", "count": 3 }
+ATTENTION the count use QUEUE.DECLARE method. If queue not exist - it will created.
+
+publish to exchange "ex1" by key "news": the exchange name is last part from url, after last slash the routing key is url parm afret "?"
+
+ curl -d 'some post data'  http://10.0.0.1:8080/sss/ex1?news 
+{"result": "Ok"}
+the loging is ( log file )
+
+2010/04/12 03:22:32 NOTICE :server started 
+2010/04/12 03:22:47 CONTENT: 10.0.0.1 GET /sss/q2 byte:9 200 OK 
+2010/04/12 03:26:07 CONTENT: 10.0.0.1 GET /sss/q2?all bytes 79 200 OK 
+2010/04/12 03:33:11 CONTENT: 10.0.0.1 POST /sss/ex1?news bytes: 14 200 OK 
+INSTALLATION
+You must install the libevent http://monkey.org/~provos/libevent/
+You must install amqpcpp lib http://code.google.com/p/rabbitcpp/
+run Makefile;
+copy amqp-rest to /usr/local/bin
+copy n.cont to /usr/local/etc/amqp-rest.conf
+edit the amqp-rest.conf
+
+logfile /usr/local/var/amqp.log;        # logfile
+pidfile /tmp/amqp.pid;  # pidfile
+
+log_level notice; # the level of logging : error, notice, warning, debug
+daemon   on;    # daemon mode
+
+port 80;         # http port, default 80
+http 10.0.0.1;  # bind IP
+
+amqp :5672;     # amqp connection string  psw:login@host:port/vhost 
+./amqp-rest <path to config file>
+default config file path is /usr/local/etc/amqo-rest.conf
+
+the restart -> send SIGHUP to amqp-rest
+the stop is: ./amqp-rest stop (if config in the default path)
+PERFORMANCE
+ab -c 5 -n 1000 http://10.0.0.1:8080/xxx/q2
+
+concurrency Level:      5
+Time taken for tests:   0.745 seconds
+Complete requests:      1000
+Failed requests:        0
+Write errors:           0
+Total transferred:      84000 bytes
+HTML transferred:       21000 bytes
+Requests per second:    1342.95 [#/sec] (mean)
+Time per request:       3.723 [ms] (mean)
+Time per request:       0.745 [ms] (mean, across all concurrent requests)
+Transfer rate:          110.16 [Kbytes/sec] received
